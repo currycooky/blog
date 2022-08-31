@@ -2,8 +2,8 @@
 CurryCooky; 2022-08-31
 
 == Topic
-[quote, 来源：力扣（LeetCode）]
-著作权归领扣网络所有。商业转载请联系官方授权，非商业转载请注明出处footnote:[https://leetcode.cn/problems/validate-stack-sequences]。
+> 著作权归领扣网络所有。商业转载请联系官方授权，非商业转载请注明出处。
+> -- 来源：力扣（LeetCode）footnote:[https://leetcode.cn/problems/validate-stack-sequences]
 
 .*English*
 Given two integer arrays pushed and popped each with distinct values, return true if this could have been the result of a sequence of push and pop operations on an initially empty stack, or false otherwise.
