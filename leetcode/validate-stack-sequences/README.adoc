@@ -1,9 +1,9 @@
 = Validate Stack Sequences
-:toc: preamble
+:toc: left
 Curry Cooky <currycooky@qq.com>
 1.0, 2022-08-31
 
-== Topic
+== Overview
 [quote]
 ----
 来源：力扣（LeetCode）
@@ -32,7 +32,7 @@ Output: false
 Explanation: 1 cannot be popped before 2.
 ----
 
-== My Thoughts
+== Solution
 We can get `pushed[0]`, and compare `popped[0]`, if they equals, we can continue compare `pushed[1]` and `popped[1]`, etc.
 
 If find not equal element(`pushed[0]` and `pushed[0]` not equals, in example 1), we need save `pushed[0]`, and increment `pushed` index, and compare `pushed[1]` to `popped[0]`...
@@ -44,7 +44,7 @@ So, we need two index, one for `pushed`, one for `popped`. And we needed some co
 . If element that pop from deque not equals `popped[n]`, and `pushed` not all tranvesal, we must push it in deque again.
 . If `pushed` all tranvesal, we can't continue push, only pop.
 
-== Show My Code
+== Code
 [source, java]
 ----
 public boolean validateStackSequences(int[] pushed, int[] popped) {

@@ -3,7 +3,7 @@
 Curry Cooky <currycooky@qq.com>
 1.0, 2022-09-01
 
-== Topic
+== Overview
 [quote]
 ----
 来源：力扣（LeetCode）
@@ -39,14 +39,14 @@ Curry Cooky <currycooky@qq.com>
 解释：在这个例子中，所有商品都没有折扣。
 ----
 
-== My Thoughts
+== Solution
 I only thought all traversal twice. This thought was so easy. We just take the element, and find the first element smaller than it.
 
 But, this thought's T.C is O(N), so we can find some other way to lower the T.C.
 
 We can use stackfootnote:[https://en.wikipedia.org/wiki/Stack_(abstract_data_type)]footnote:[https://oi-wiki.org/ds/monotonous-stack/], and now, we have to move from right to left, find the first element smaller than current, and push that in stack, finally.
 
-== Show My Code
+== Code
 .*For Loop*
 [source, java]
 ----
