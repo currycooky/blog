@@ -1,5 +1,7 @@
 = Validate Stack Sequences
-CurryCooky; 2022-08-31
+:toc: preamble
+Curry Cooky <currycooky@qq.com>
+1.0, 2022-08-31
 
 == Topic
 [quote]
