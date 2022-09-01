@@ -1,0 +1,77 @@
+= Hibernate Validate
+:toc: left
+:icons: font
+Curry Cooky <currycooky@qq.com>
+1.0, 2022-09-01
+
+== Manual
+[source, java]
+----
+Validator validator = Validation.byProvider(HibernateValidator.class)
+        .configure()
+        .failFast(true) <1>
+        .buildValidatorFactory()
+        .getValidator();
+
+validator.validate(obj);
+----
+<1> Fail fast, will return as soon as find error.
+
+== Spring
+[source, java]
+----
+@Bean
+public Validator validator() {
+	return Validation.byProvider(HibernateValidator.class)
+        .configure()
+        .failFast(true)
+        .buildValidatorFactory()
+        .getValidator();
+}
+----
+
+== Validation
+You can find some already writed annotation in package `javax.validation.constraints`.
+
+And you can write annotation by yourself, too.
+
+.Create Annotation
+[source, java]
+----
+import javax.validation.Constraint;
+import javax.validation.Payload;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
+
+@Target(ElementType.FIELD) // <1>
+@Retention(RetentionPolicy.RUNTIME)
+@Constraint(validatedBy = NotManValidator.class) // <2>
+public @interface NotMan {
+    String message() default "Cannot be a man";
+
+    Class<?>[] groups() default {};
+
+    Class<? extends Payload>[] payload() default {};
+}
+----
+<1> You can define `@Target` as what you need.
+<2> Validator class, implements `ConstraintValidator`.
+
+.Create Validator
+[source, java]
+----
+import org.apache.commons.lang3.StringUtils;
+
+import javax.validation.ConstraintValidator;
+import javax.validation.ConstraintValidatorContext;
+
+public class NotManValidator implements ConstraintValidator<NotMan, String> { // <1>
+    @Overid
+    public boolean isValid(String str, ConstraintValidatorContext constraintValidatorContext) {
+        return !StringUtils.equalsAnyIgnoreCase(s, "男", "man");
+    }
+}
+----
+<1> You can define type as what you want, but remember change validate logic.

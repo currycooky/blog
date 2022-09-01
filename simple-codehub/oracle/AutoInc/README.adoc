@@ -1,0 +1,33 @@
+= Oracle Auto Inc
+:toc: left
+:icons: font
+Curry Cooky <currycooky@qq.com>
+1.0, 2022-09-01
+
+== Create Seq
+[source, sql]
+----
+CREATE SEQUENCE {SEQ_NAME} // <1>
+MINVALUE 1 NOMAXVALUE INCREMENT BY 1 // <2>
+START WITH 1 NOCACHE;
+----
+<1> Seq name, unique.
+<2> Step.
+
+== Create Trigger
+[source, sql]
+----
+CREATE OR REPLACE TRIGGER {TRIGGER_NAME} // <1>
+    BEFORE INSERT
+    ON {TABLE_NAME} // <2>
+    FOR EACH ROW
+    WHEN (NEW.ID IS NULL)
+BEGIN
+    SELECT {SEQ_NAME}.NEXTVAL // <3>
+    INTO :NEW.ID
+    FROM DUAL;
+END;
+----
+<1> Trigger name, unique.
+<2> Table name.
+<3> Seq name.

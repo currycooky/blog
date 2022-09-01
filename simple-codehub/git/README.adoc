@@ -1,0 +1,9 @@
+= Generally Git Cli
+:toc: left
+Curry Cooky <currycooky@qq.com>
+1.0, 2022-09-01
+
+== Update Remote New Branch
+----
+git remote update origin --prune
+----
