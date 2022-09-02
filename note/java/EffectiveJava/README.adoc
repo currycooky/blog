@@ -1,6 +1,6 @@
 = Effective Java
 :toc: left
-:icons: image
+:icons: font
 Curry Cooky <currycooky@qq.com>
 1.0, 2022-09-01
 
