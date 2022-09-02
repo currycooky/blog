@@ -1,0 +1,4 @@
+:icons: font
+
+== Chapter 2: Methods Common to All Objects
+When and how to override the nonfinal Object methods?

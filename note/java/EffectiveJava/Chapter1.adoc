@@ -1,6 +1,6 @@
 :icons: font
 
-== Chapter 1
+== Chapter 1: Creating and Destroying Objects
 1. When and how to create objects?
 2. When and how to avoid creating objects?
 3. How to ensure objects are destroyed in a timely manner?
