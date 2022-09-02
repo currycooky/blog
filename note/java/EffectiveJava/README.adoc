@@ -11,4 +11,5 @@ endif::[]
 Curry Cooky <currycooky@qq.com>
 1.0, 2022-09-01
 
+TIP: test
 include::Chapter1.adoc[Chapter1]
