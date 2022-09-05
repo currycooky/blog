@@ -1,0 +1,87 @@
+= Find Duplicate Subtrees
+:toc: left
+:icons: font
+Curry Cooky <currycooky@qq.com>
+1.0, 2022-09-05
+
+== Overview
+给定一棵二叉树 root，返回所有重复的子树。
+
+对于同一类的重复子树，你只需要返回其中任意一棵的根结点即可。
+
+如果两棵树具有相同的结构和相同的结点值，则它们是重复的。
+
+[quote]
+----
+来源：力扣（LeetCode）
+链接：https://leetcode.cn/problems/find-duplicate-subtrees
+著作权归领扣网络所有。商业转载请联系官方授权，非商业转载请注明出处。
+----
+
+== Solution
+Use `_DFS_`, find the last element and cache it, and return. ​If we already have this element, we take it to result, if we don't have it, we take it in a cache.
+
+== Code
+.*Serialization*
+[source, java]
+----
+class Solution {
+    Map<String, TreeNode> map = new HashMap<>();
+    Set<TreeNode> set = new HashSet<>();
+
+    public List<TreeNode> findDuplicateSubtrees(TreeNode root) {
+        dfs(root);
+        return new ArrayList<>(set);
+    }
+
+    String dfs(TreeNode root) {
+        if (root == null) {
+            return "";
+        }
+        String s = root.val +
+                "(" +
+                dfs(root.left) +
+                ")(" +
+                dfs(root.right) +
+                ")";
+        if (map.containsKey(s)) {
+            set.add(map.get(s));
+        } else {
+            map.put(s, root);
+        }
+        return s;
+    }
+}
+----
+
+.*Triple*
+[source, java]
+----
+class Solution {
+    Map<String, Pair<TreeNode, Integer>> map = new HashMap<>(); // <1>
+    Set<TreeNode> set = new HashSet<>();
+    int idx = 0;
+
+    public List<TreeNode> findDuplicateSubtrees(TreeNode root) {
+        dfs(root);
+        return new ArrayList<>(set);
+    }
+
+    int dfs(TreeNode root) {
+        if (root == null) {
+            return 0;
+        }
+        int[] tri = {root.val, dfs(root.left), dfs(root.right)};
+        String s = Arrays.toString(tri);
+        if (map.containsKey(s)) {
+            Pair<TreeNode, Integer> pair = map.get(s);
+            set.add(pair.getKey());
+            return pair.getValue();
+        } else {
+            map.put(s, new Pair<>(root, ++idx));
+            return idx;
+        }
+    }
+}
+----
+<1> `Pair` need jdk1.8 or jdk1.9, jdk17 remove it.
