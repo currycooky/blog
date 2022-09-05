@@ -11,6 +11,11 @@ endif::[]
 Curry Cooky <currycooky@qq.com>
 1.0, 2022-09-01
 
+== Chapter 1: Creating and Destroying Objects
 include::Chapter1.adoc[Chapter1]
 
+== Chapter 2: Methods Common to All Objects
 include::Chapter2.adoc[Chapter2]
+
+== Chapter 3: Classes and Interfaces
+include::Chapter3.adoc[Chapter3]
