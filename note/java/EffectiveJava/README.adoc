@@ -325,3 +325,81 @@ public int hashCode() {
 === Item 14: Consider implementing Comparable
 
 == Chapter 3: Classes and Interfaces
+Help you make the best use of these powerful elements so that your classes and interfaces are usable, robust and flexible.
+
+=== Item 15: Minimize the accessibility of classes and members
+Make each class or member as inaccessible as possible.
+
+If a package-private top-level class or interface is used by only one class, consider making the top-level class a private static nested class of sole class that use it.
+
+If a method override a superclass method, it cannot have a more restrictive access level in the subclass than in the superclass.
+
+Instance fields of public classes should rarely be public. Classes with public mutable fields are not generally thread-safe. The same advice applies to static fields, except you can expose constants via public static final fields.
+
+Nonzero-legnth array is always mutable, so it is wrong for a class to have a public static final array fields, or an accessor that returns such a field.
+
+=== Item 16: In public classes, use accessor methods, not public fields
+If a class is accessible outside its package, provide accessor methods to preserve the flexibility to change the class's internal representation.
+
+In summary, public classes should never expose mutable fields.
+
+=== Item 17: Minimize mutability
+An imutable class is simply a class whose instances cannot be modified. All of the information contained in each instance is fixed for the lifetime of the object, so no changes can ever be observed.
+
+To make a class immutable, follow these five rules:
+. Don't provide methods that modify the object's state.
+. Ensure that the class can't be extended.
+. Make all fields final.
+. Make all fields private.
+. Ensure exclusive access to any mutable components.
+[source, java]
+----
+public final class Complex {
+    private final double re;
+    private final double im;
+
+    public Complex(double re, double im) {
+        this.re = re;
+        this.im = im;
+    }
+
+    public double re() {
+        return re;
+    }
+
+    public double im() {
+        return im;
+    }
+
+    public Complex plus(Complex c) {
+        return new Complex(re + c.re, im + c.im);
+    }
+
+    public Complex minus(Complex c) {
+        return new Complex(re - c.re, im - c.im);
+    }
+
+    public Complex times(Complex c) {
+        return new Complex(re * c.re - im * c.im, re * c.im + im * c.re);
+    }
+
+    public Complex dividedBy(Complex c) {
+        double tmp = c.re * c.re + c.im * c.im;
+        return new Complex((re * c.re + im * c.im) / tmp, (im * c.re - re * c.im) / tmp);
+    }
+}
+----
+Immutable objects are simple. An immutable object can be in exactly one state, the state in which it was created.
+
+Immutable objects are inherently thread-safe; they require no synchronization.
+
+The major disadvantage of immutable classes is that they require a separate object for each distinct value.
+
+Resist the urge to write a setter for every getter. Classes should be immutable unless there's a very good reason to make them mutable.
+
+There are some classes for which immutability is impractical. If a class cannot be made immutable, limit its mutability as much as possible. Make every field final unless there is a compelling reason to make it nonfinal.
+
+Construtors should create fully initialized objects with all of their invariants established. Don't provide a public initialization method separate from the constructor or static factory unless there is a compelling reason to do so.
+
+=== Item 18: Favor composition over inheritance
+Inheritance violates encapsulation.
