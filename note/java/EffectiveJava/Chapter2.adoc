@@ -2,3 +2,43 @@
 
 == Chapter 2: Methods Common to All Objects
 When and how to override the nonfinal Object methods?
+
+=== Item 10: Overriding equals general contract
+.Not need to override equals method:
+. Each instance of the class is inherently unique.
+. There is no need for the class to provide a "logical equality" test.
+. A supercalss has already overridden equals, and the superclass behavior is appropriate for this class.
+. The class is private or package-private, and you are certain that its equlas method will never be invoked.
+
+.General contract
+. Reflexive: x != null, x.equals(x) must return true.
+. Symmetric: x,y != null, x.equals(y) == y.equals(x).
+. Transitive: x,y,z != null, x.equals(y) == y.equals(z) == z.equals(x)
+. Consistent: x,y != null and x,y not modified, multiple invocation of x.equals(y) must consistently.
+. x != null, x.equals(null) must return false.
+
+[NOTE]
+====
+. Always override hashCode when you override equals.
+. Don't try to be too clever.
+. Don't substitude another type for Object in the equals declaration.
+
+    public boolean equals(MyClass o) {
+        // Don't do it like this!
+    }
+====
+
+=== Item 11: Always override hashCode when you override equals
+[source, java]
+----
+@Override
+public int hashCode() {
+    return Objects.hash(value1, value2, value3, ...);
+}
+----
+
+=== Item 12: Always override toString
+
+=== Item 13: Override clone judiciously
+
+=== Item 14: Consider implementing Comparable
