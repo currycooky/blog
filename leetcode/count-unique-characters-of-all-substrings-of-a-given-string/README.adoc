@@ -1,0 +1,89 @@
+= Count Unique Characters Of All Substrings Of A Given String
+:toc: left
+:icons: font
+Curry Cooky <currycooky@qq.com>
+1.0, 2022-09-06
+
+== Overview
+____
+来源：力扣（LeetCode）
+
+链接：https://leetcode.cn/problems/count-unique-characters-of-all-substrings-of-a-given-string
+
+著作权归领扣网络所有。商业转载请联系官方授权，非商业转载请注明出处。
+____
+我们定义了一个函数 countUniqueChars(s) 来统计字符串 s 中的唯一字符，并返回唯一字符的个数。
+
+例如：s = "LEETCODE" ，则其中 "L", "T","C","O","D" 都是唯一字符，因为它们只出现一次，所以 countUniqueChars(s) = 5 。
+
+本题将会给你一个字符串 s ，我们需要返回 countUniqueChars(t) 的总和，其中 t 是 s 的子字符串。输入用例保证返回值为 32 位整数。
+
+注意，某些子字符串可能是重复的，但你统计时也必须算上这些重复的子字符串（也就是说，你必须统计 s 的所有子字符串中的唯一字符）。
+
+.Example 1:
+....
+输入: s = "ABC"
+输出: 10
+解释: 所有可能的子串为："A","B","C","AB","BC" 和 "ABC"。
+     其中，每一个子串都由独特字符构成。
+     所以其长度总和为：1 + 1 + 1 + 2 + 2 + 3 = 10
+....
+
+== Solution
+For index `c1`, the next index is `c2`, the last index is `c0`, so `res = (c1 - c0) * (c2 - c1)`.
+
+== Code
+[source, java]
+----
+class Solution {
+    public int uniqueLetterString(String s) {
+        Map<Character, List<Integer>> index = new HashMap<>();
+        final int length = s.length();
+        for (int i = 0; i < length; i++) {
+            char c = s.charAt(i);
+            index.computeIfAbsent(c, (Character k) -> {
+                List<Integer> list = new ArrayList<>();
+                list.add(-1);
+                return list;
+            }).add(i);
+        }
+        int res = 0;
+        for (Map.Entry<Character, List<Integer>> entry : index.entrySet()) {
+            List<Integer> list = entry.getValue();
+            list.add(length);
+            for (int i = 1; i < list.size() - 1; i++) {
+                res += (list.get(i) - list.get(i - 1)) * (list.get(i + 1) - list.get(i));
+            }
+        }
+        return res;
+    }
+}
+----
+[source, java]
+----
+class Solution {
+    public int uniqueLetterString(String s) {
+        int res = 0;
+        int[] lastIndexes = new int[26];
+        int[] nowIndexes = new int[26];
+        Arrays.fill(lastIndexes, -1);
+        Arrays.fill(nowIndexes, -1);
+        int length = s.length();
+        for (int i = 0; i < length; i++) {
+            char c = s.charAt(i);
+            int index = c - 'A';
+            if (nowIndexes[index] > -1) {
+                res += (i - nowIndexes[index]) * (nowIndexes[index] - lastIndexes[index]);
+            }
+            lastIndexes[index] = nowIndexes[index];
+            nowIndexes[index] = i;
+        }
+        for (int i = 0; i < 26; i++) {
+            if (nowIndexes[i] > -1) {
+                res += (length - nowIndexes[i]) * (nowIndexes[i] - lastIndexes[i]);
+            }
+        }
+        return res;
+    }
+}
+----
