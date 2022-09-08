@@ -1,0 +1,18 @@
+= Beautiful Arrangement II
+:toc: left
+:icons: font
+Curry Cooky <currycooky@qq.com>
+1.0, 2022-09-08
+
+== Overview
+____
+来源：力扣（LeetCode）
+
+链接：https://leetcode.cn/problems/beautiful-arrangement-ii
+
+著作权归领扣网络所有。商业转载请联系官方授权，非商业转载请注明出处。
+____
+Given two integers n and k, construct a list answer that contains n different positive integers ranging from 1 to n and obeys the following requirement:
+
+Suppose this list is answer = [a1, a2, a3, ... , an], then the list [|a1 - a2|, |a2 - a3|, |a3 - a4|, ... , |an-1 - an|] has exactly k distinct integers.
+Return the list answer. If there multiple valid answers, return any of them.

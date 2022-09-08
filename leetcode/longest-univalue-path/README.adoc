@@ -5,12 +5,11 @@ Curry Cooky <currycooky@qq.com>
 1.0, 2022-09-02
 
 == Overview
-[quote]
-----
+____
 来源：力扣（LeetCode）
 链接：https://leetcode.cn/problems/longest-univalue-path
 著作权归领扣网络所有。商业转载请联系官方授权，非商业转载请注明出处。
-----
+____
 
 给定一个二叉树的`root`，返回 最长的路径的长度 ，这个路径中的每个节点具有相同值。这条路径可以经过也可以不经过根节点。
 
