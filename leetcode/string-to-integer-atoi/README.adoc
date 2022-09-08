@@ -1,0 +1,114 @@
+= String to Integer (atoi)
+:toc: left
+Curry Cooky <currycooky@qq.com>
+1.0, 2022-09-08
+
+== Overview
+____
+来源：力扣（LeetCode）
+
+链接：https://leetcode.cn/problems/string-to-integer-atoi
+
+著作权归领扣网络所有。商业转载请联系官方授权，非商业转载请注明出处。
+____
+Implement the myAtoi(string s) function, which converts a string to a 32-bit signed integer (similar to C/C++'s atoi function).
+
+The algorithm for myAtoi(string s) is as follows:
+
+Read in and ignore any leading whitespace.
+Check if the next character (if not already at the end of the string) is '-' or '+'. Read this character in if it is either. This determines if the final result is negative or positive respectively. Assume the result is positive if neither is present.
+Read in next the characters until the next non-digit character or the end of the input is reached. The rest of the string is ignored.
+Convert these digits into an integer (i.e. "123" -> 123, "0032" -> 32). If no digits were read, then the integer is 0. Change the sign as necessary (from step 2).
+If the integer is out of the 32-bit signed integer range [-231, 231 - 1], then clamp the integer so that it remains in the range. Specifically, integers less than -231 should be clamped to -231, and integers greater than 231 - 1 should be clamped to 231 - 1.
+Return the integer as the final result.
+Note:
+
+Only the space character ' ' is considered a whitespace character.
+Do not ignore any characters other than the leading whitespace or the rest of the string after the digits.
+
+== Solution
+Automation.
+
+[cols="5, 5, 5, 5, 5"]
+|===
+|
+| *' '*
+| *+/-*
+| *number*
+| *other*
+
+| *start*
+| start
+| signed
+| in_number
+| end
+
+| *signed*
+| end
+| end
+| in_number
+| end
+
+| *in_number*
+| end
+| end
+| in_number
+| end
+
+| *end*
+| end
+| end
+| end
+| end
+|===
+
+== Code
+[source, java]
+----
+class Solution {
+    private String state = "start";
+    private Map<String, String[]> table = new HashMap<String, String[]>() {{
+        put("start", new String[]{"start", "signed", "in_number", "end"});
+        put("signed", new String[]{"end", "end", "in_number", "end"});
+        put("in_number", new String[]{"end", "end", "in_number", "end"});
+        put("end", new String[]{"end", "end", "end", "end"});
+    }};
+
+    public int myAtoi(String s) {
+        long res = 0L;
+        int sign = 1;
+        for (int i = 0; i < s.length(); i++) {
+            char c = s.charAt(i);
+            state = table.get(this.state)[col(c)];
+            if (isInNumber()) {
+                res = res * 10 + c - '0';
+                res = sign == 1 ? Math.min(res, (long) Integer.MAX_VALUE) : Math.min(res, -(long) Integer.MIN_VALUE);
+            } else if (isSigner()) {
+                sign = c == '+' ? 1 : -1;
+            }
+        }
+        return (int) (sign * res);
+    }
+
+    private boolean isInNumber() {
+        return Objects.equals(state, "in_number");
+    }
+
+    private boolean isSigner() {
+        return Objects.equals(state, "signed");
+    }
+
+    private int col(char c) {
+        if (c == ' ') {
+            return 0;
+        }
+        if (c == '+' || c == '-') {
+            return 1;
+        }
+        if (Character.isDigit(c)) {
+            return 2;
+        }
+        return 3;
+    }
+}
+----
