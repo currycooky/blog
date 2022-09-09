@@ -412,3 +412,132 @@ If serveral subclasses are written and none uses a protected member, you should 
 Constructors must not invoke overridable methods.
 
 The `Cloneable` and `Serializable` interfaces present special difficulties when designing for inheritance. Neither `clone` nor `readObject` may invoke an overridable method, directly or indirectly.
+
+If you decide to implement `Serializable` in a class designed for inheritance and the class has a `readResolve` or `writeReplace` method, you must make them protected rather than private.
+
+Designing a class for inheritance requires great effort and places substantial limitations on the class.
+
+=== Item 20: Prefer interfaces to abstract classes
+Existing classes cannot, in general, be retrofitted to extend a new abstract class. If you want to have two classes extend the same abstract class, you have to place it high up in the type hierarchy where it is an ancestor of both classes. Unfortunately, this can cause great collateral damage to the type hierarchy, forcing all descendants of the new abstract class to subclass it, whether or not it is appropriate.
+
+=== Item 21: Design interfaces for posterity
+Utmost importace to design interfaces with great care.
+
+Test each new interface before you release it.
+
+=== Item 22: Use interfaces only to define types
+Do not use constant interface! The constant interface pattern is a poor use of interfaces. That a class uses some constants internally is an implementation detail. Implementing a constant interface causes this implementtation detail to leak into the class's exported API.
+[source, java]
+----
+public interface PhysicalConstatns {
+    static final double NUMBER = 2.0D;
+}
+----
+
+=== Item 23: Prefer class hierarchies to tagged classes
+Tagged classes have numerous shortcomings. They are cluttered with bolierplate, including enum declasrations, tag fields, and switch statements. Readability and flexibility is further harmed because multiple implementations are jumbled together in a single class, and memory footprint is increased. Tagged classes are verbose, error-prone, and inefficient.
+[source, java]
+----
+public abstract class Figure {
+    abstract double area();
+}
+
+public class Circle extends Figure {
+    final double radius;
+
+    public Circle(double radius) {
+        this.radius = radius;
+    }
+
+    @Override
+    double area() {
+        return Math.PI * (radius * radius);
+    }
+}
+
+public class Rectangle extends Figure {
+    final double length;
+    final double width;
+
+    public Rectangle(double length, double width) {
+        this.length = length;
+        this.width = width;
+    }
+
+    @Override
+    double area() {
+        return length * width;
+    }
+}
+----
+
+=== Item 24: Favor static member classes over nonstatic
+If you declare a member class that does not require access to an eclosing instance, always put the static modifier in its declaration, making it s static rather than a nonstatic member class.
+
+=== Item 25: Limit source files to a single top-level class
+Never put multiple top-level classes or interfaces in a single source file.
+[source, java]
+----
+public class Circle extends Figure {
+    final double radius;
+
+    public Circle(double radius) {
+        this.radius = radius;
+    }
+
+    @Override
+    double area() {
+        return Math.PI * (radius * radius);
+    }
+}
+
+public class Rectangle extends Figure {
+    final double length;
+    final double width;
+
+    public Rectangle(double length, double width) {
+        this.length = length;
+        this.width = width;
+    }
+
+    @Override
+    double area() {
+        return length * width;
+    }
+}
+----
+[source, java]
+----
+public abstract class Figure {
+    abstract double area();
+
+    public class Circle extends Figure {
+        final double radius;
+
+        public Circle(double radius) {
+            this.radius = radius;
+        }
+
+        @Override
+        double area() {
+            return Math.PI * (radius * radius);
+        }
+    }
+
+    public class Rectangle extends Figure {
+        final double length;
+        final double width;
+
+        public Rectangle(double length, double width) {
+            this.length = length;
+            this.width = width;
+        }
+
+        @Override
+        double area() {
+            return length * width;
+        }
+    }
+
+}
+----
