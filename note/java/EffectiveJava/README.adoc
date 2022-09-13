@@ -541,3 +541,37 @@ public abstract class Figure {
 
 }
 ----
+
+== Chapter 4: Generics
+How to maximize the benefits and minimize the complications.
+
+=== Item 26: Don't use raw types
+[source, java]
+----
+// Don't do this!
+private final Collection stamps = ...;
+----
+If you use raw types, you lose all safety and expressiveness benefits of Generics, but not if you use a parameterized type such as List<Objecjt>.
+
+=== Item 27: Eliminate unchecked warnings
+[source, java]
+----
+// Don't do this!
+Set<String> strs = new HashSet();
+
+// You can do like this.
+Set<String> strs = new HashSet<>();
+----
+Eliminate every unchecked warning that you can. If you eliminate all warnings, you are assured that you code is typesafe, which is a very good thing.
+
+If you cann't eliminate a warning, but you can prove that the code that provoked the warning is typesafe, then (and only then) suppress the warning with an `@SuppressWarnings("unchecked")` annotation. Always use the `@SuppressWarnings` on the smallest scope possible, never use it on an entire class.
+
+Also can declare a local variable:
+[source, java]
+----
+@SuppressWarnings("unchecked") T[] result = Arryas.copyOf(elements, size, a.getClass());
+----
+
+Every time you use a `@SuppressWanings("unchecked")` annotation, add a comment saying why it is safe to do so.
+
+=== Item 28: Prefer lists to arrays
