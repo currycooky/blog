@@ -1,0 +1,45 @@
+=  Maximum Swap
+:toc: left
+Curry Cooky <currycooky@qq.com>
+1.0, 2022-09-13
+
+== Overview
+____
+来源：力扣（LeetCode）
+
+链接：https://leetcode.cn/problems/maximum-swap
+
+著作权归领扣网络所有。商业转载请联系官方授权，非商业转载请注明出处。
+____
+You are given an integer num. You can swap two digits at most once to get the maximum valued number.
+
+Return the maximum valued number you can get.
+
+== Solution
+[source, java]
+----
+class Solution {
+    public int maximumSwap(int num) {
+        char[] chars = String.valueOf(num).toCharArray();
+        int length = chars.length;
+        int maxIndex = length - 1;
+        int index1 = -1, index2 = -1;
+        for (int i = length - 1; i >= 0; i--) {
+            if (chars[i] > chars[maxIndex]) {
+                maxIndex = i;
+            } else if (chars[i] < chars[maxIndex]) {
+                index1 = i;
+                index2 = maxIndex;
+            }
+        }
+        if (index1 > -1) {
+            char temp = chars[index1];
+            chars[index1] = chars[index2];
+            chars[index2] = temp;
+            return Integer.parseInt(new String(chars));
+        } else {
+            return num;
+        }
+    }
+}
+----
