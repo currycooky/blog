@@ -575,3 +575,59 @@ Also can declare a local variable:
 Every time you use a `@SuppressWanings("unchecked")` annotation, add a comment saying why it is safe to do so.
 
 === Item 28: Prefer lists to arrays
+[source, java]
+----
+Object[] objs = new Long[1];
+objs[0] = "Error"; // Throws ArrayStoreException
+----
+
+[source, java]
+----
+List<Object> objs = new ArrayList<Long>(); // Incompatible types, won't compile!
+----
+
+=== Item 29: Favor generic types
+Generic types are safer and easier to use than types that require casts in client code.
+[source, java]
+----
+public class Stack<E> {
+    private E[] elemetns;
+
+    public Stack() {
+        elements = (E[]) new Object[16];
+    }
+}
+----
+
+=== Item 30: Favor generic methods
+[source, java]
+----
+// Uses raw types - unacceptable!
+public static Set union(Set s1, Set s2) {
+    Set res = new HashSet(s1);
+    res.addAll(s2);
+    return res;
+}
+----
+[source, java]
+----
+public static <E> Set<E> union(Set<E> s1, Set<E> s2) {
+    Set<E> res = new HashSet<>(s1);
+    res.addAll(s2);
+    return res;
+}
+----
+
+=== Item 31: Use bounded wildcards to increate API flexibility
+[source, java]
+----
+public void pushAll(Iterable<? extends E> src) {
+    for (E e : src) {
+        push(e);
+    }
+}
+----
+For maximum flexibility, use wildcard types on input parameters that represent producers or consumers. If an input parameter is both a producer and a consumer, then wildcard types will do you no good: you need an exact  type match, which is what you get without any wildcards.
+
+[.text-center]
+*PECS stands for producer-extends, consumer-super*
