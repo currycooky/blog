@@ -631,3 +631,7 @@ For maximum flexibility, use wildcard types on input parameters that represent p
 
 [.text-center]
 *PECS stands for producer-extends, consumer-super*
+
+Do not use bounded wildcard types as return types. If the user of a  class has to think about wildcard types, there is probably something wrong with its API.
+
+=== Item 32: Combine generics and varargs judiciously
