@@ -1,0 +1,31 @@
+=  Mean of Array After Removing Some Elements
+:toc: left
+
+== Overview
+____
+来源：力扣（LeetCode）
+
+链接：https://leetcode.cn/problems/mean-of-array-after-removing-some-elements
+
+著作权归领扣网络所有。商业转载请联系官方授权，非商业转载请注明出处。
+____
+Given an integer array arr, return the mean of the remaining integers after removing the smallest 5% and the largest 5% of the elements.
+
+Answers within 10-5 of the actual answer will be considered accepted.
+
+== Solution
+[source, java]
+----
+class Solution {
+    public double trimMean(int[] arr) {
+        int length = arr.length;
+        int num = (int) (length * 0.05);
+        Arrays.sort(arr);
+        double sum = 0;
+        for (int i = num; i < length - num; i++) {
+            sum += arr[i];
+        }
+        return sum / (length - num * 2);
+    }
+}
+----
