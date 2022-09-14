@@ -640,3 +640,18 @@ Recall that a generic array is created when the method is invoked, to hold the v
 In summary, varargs and generics do not interact well because the varargs facility is a leaky abstraction built atop arrays, and arrays have different type rules from generics. Though generic varargs parameters are not typesafe, they are legal. If you choose to write a method with a generic (or parameterized) varargs parameter, first ensure that the method is typesafe, and then annotate it with `@SafeVarargs` so it is not unpleasant to use.
 
 === Item 33: Consider typesafe heterogeneous containers
+[source, java]
+----
+public class Favorites {
+    private Map<Class<?>, Object> favorites = new HashMap<>();
+
+    public <T> void putFavorite(Class<T> type, T instance) {
+        favorites.put(Objects.requireNonNull(type), type.cast(instance));
+    }
+
+    public <T> T getFavorite(Class<T> type) {
+        return type.cast(favorites.get(type));
+    }
+}
+----
+The normal use of generics, exemplified by the collections APIS, restricts you to a fixed number of type parameters per container. You can get around this restriction by placing the type parameter on the key rather than the container.
