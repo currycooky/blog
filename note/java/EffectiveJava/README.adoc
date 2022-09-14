@@ -636,3 +636,7 @@ Do not use bounded wildcard types as return types. If the user of a  class has t
 
 === Item 32: Combine generics and varargs judiciously
 Recall that a generic array is created when the method is invoked, to hold the varargs parameters. If the method doesn't store anything into the array (which would overwrite the parameters) and doesn't allow a reference to the array to escape (which would enable untrusted code to access the array), then it's safe.
+
+In summary, varargs and generics do not interact well because the varargs facility is a leaky abstraction built atop arrays, and arrays have different type rules from generics. Though generic varargs parameters are not typesafe, they are legal. If you choose to write a method with a generic (or parameterized) varargs parameter, first ensure that the method is typesafe, and then annotate it with `@SafeVarargs` so it is not unpleasant to use.
+
+=== Item 33: Consider typesafe heterogeneous containers
