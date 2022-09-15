@@ -724,3 +724,22 @@ public enum NumberEnum {
     }
 }
 ----
+
+=== Item 36: Use EnumSet instead of bit fields
+[source, java]
+----
+public class Text {
+    public enum Style { BOLD, ITALIC, UNDERLINE, STRIKETHROUGH }
+         
+    // Any Set could be passed in, but EnumSet is clearly best
+    public void applyStyles(Set<Style> styles) {
+        // ...
+    }
+}
+
+text.applyStyles(EnumSet.of(Style.BOLD, Style.ITALIC));
+----
+
+=== Item 37: Use EnumMap instead of ordinal indexing
+
+=== Item 38: Emulate extensible enums with interfaces
