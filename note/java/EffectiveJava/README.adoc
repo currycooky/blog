@@ -655,3 +655,38 @@ public class Favorites {
 }
 ----
 The normal use of generics, exemplified by the collections APIS, restricts you to a fixed number of type parameters per container. You can get around this restriction by placing the type parameter on the key rather than the container.
+
+== Chapter 6: Enums and Annotations
+
+=== Item 34: Use enums instead of int constants
+[source, java]
+----
+public static final int APPLE_FUJI = 0;
+public static final int APPLE_PIPPIN = 1;
+public static final int ORANGE_NAVEL = 0;
+----
+This technique, known as the `_int enum pattern_`, has many shortcomings. It provides nothing in the way of type safety and little in the way of expressive power. The compiler won't complain if you pass an apple to a method that expects an orange, compare apples to orange with the `==` operator, or worse.
+
+If you print such a constant or display it from a debugger, all you see is a number, which isn't very helpful.
+
+Enums provide compile-time type safety. Attempts to pass values of the wrong type will result in compile-time errors, as will attempts to assign an expression of one enum type to a variable of another, or to use the `==` operator to compare values of different enum types.
+
+Enum types with identically named constants coexist peachfully. You can add or reorder constants in an enum type without recompliling its clients. Finally, you can translate enums into printable strings by calling their `toString` method.
+
+Enum types let you add arbitrary methods and fields and implement arbitrary interfaces.
+[source, java]
+----
+public enum Operation {
+    PLUS {
+        public double apply(double x, double y) {
+            return x + y;
+        }
+    },
+
+    MINUS {
+        public double apply(double x, double y) {
+            return x - y;
+        }
+    }
+}
+----
