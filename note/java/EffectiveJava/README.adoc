@@ -690,3 +690,37 @@ public enum Operation {
     }
 }
 ----
+
+So when should you use enums? Use enums any time you need a set of constants whose members are known at compile time.
+
+=== Item 35: Use instance fields instead of ordinals
+All enums have an `ordinal` method, which returns the numberical position of each enum constant in its type. But you should never use it.
+[source, java]
+----
+public enum NumberEnum {
+    ONE, TWO, THREE;
+
+    public int num() {
+        return ordinal();
+    }
+}
+----
+If the constants are reordered, the `num` method will break.
+
+Never derive a value associated with an enum from its ordinal; store it in an instance field instead.
+[source, java]
+----
+public enum NumberEnum {
+    ONE(1), TWO(2), THREE(3);
+
+    private final int num;
+
+    NumberEnum(int num) {
+        this.num = num;
+    }
+
+    public int num() {
+        return num;
+    }
+}
+----
