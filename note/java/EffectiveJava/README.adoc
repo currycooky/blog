@@ -743,3 +743,38 @@ text.applyStyles(EnumSet.of(Style.BOLD, Style.ITALIC));
 === Item 37: Use EnumMap instead of ordinal indexing
 
 === Item 38: Emulate extensible enums with interfaces
+[source, java]
+----
+public interface EnumInterface {
+    int apply(int a);
+}
+----
+[source, java]
+----
+public enum InterfaceEnum implements EnumInterface {
+    A {
+        @Override
+        public int apply(int a) {
+            return a + 'a';
+        }
+    },
+    B {
+        @Override
+        public int apply(int a) {
+            return a + 'b';
+        }
+    }
+}
+----
+
+[source, java]
+----
+public <T extends Enum<T> & EnumInterface> void test(Class<T> enums, int a) {
+    for (T t : enums.getEnumConstants()) {
+        System.out.println(t.apply(a));
+    }
+}
+----
+
+=== Item 39: Prefer annotaions to naming patterns
+Naming patterns has serveral big disadvantages. First, typographical errors result in silent failures. Second, naming patterns is no way to ensure that they are used only on approprite program elements. And third, they provide no good way to associate parameter values with program elements.
