@@ -817,3 +817,65 @@ If you have a function object that you want to make serializable, use an instanc
 Don't use anonymous classes for function objects unless you have to create instances of types that aren't functional interafces.
 
 === Item 43: Prefer method references to lambdas
+[source, java]
+----
+// lambda
+map.merge(key, 1, (count, incr) -> count + incr);
+
+// method
+map.merge(key, 1, Integer::sum);
+----
+
+You should usually, but not always, replace a lambda with a method reference. Occasionally, a lambda will be more succinct than a method reference.
+[source, java]
+----
+// method
+service.execute(GoshThisClassNameIsHumongous::action);
+
+// lambda
+service.execute(() -> action());
+----
+
+Where method references are shorter and clearer, use them; where they aren't, stick with lambdas.
+
+=== Item 44: Favor the use of standard functional interfaces
+
+[cols="1,1"]
+|===
+|Interface |Function Signature
+
+|UnaryOperator<T>
+|T apply(T t)
+
+|BinaryOperator<T>
+|T apply(T t1, T t2)
+
+|Predicate<T>
+|boolean test(T t)
+
+|Function<T,R>
+|R apply(T t)
+
+|Supplier<T>
+|T get()
+
+|Consumer<T>
+|void accept(T t)
+|===
+
+Don't be tempted to use basic functional interfaces with boxed primitives instead of primitive functional interfaces.
+
+Notice that the interface is labeled with the `@FunctionalInterface` annotation.
+
+Do not provide a method with multiple overloadings that take different functional interfaces in the same argument position if it could create a possible ambiguity in the client.
+
+=== Item 45: Use streams judiciously
+The streams API is sufficiently versatile that practically any computation can be performed using streams, but just because you can doesn't mean you should. When used appropriately, streams can make programs shorter and clearer; when used inappropriately, they can make programs difficult to read and maintain.
+
+Overusing streams makes programs hard to read and maintain.
+
+In the absence of explicit types, careful naming of lambda parameters is essential to the readability of stream pipelines.
+
+Using helper methods is even more important for readability in stream pipelines that in iterative code.
+
+If you're not sure whether a task is better served by streams or iteration, try both and see which works better.
