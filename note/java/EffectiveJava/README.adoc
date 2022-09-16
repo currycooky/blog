@@ -778,3 +778,14 @@ public <T extends Enum<T> & EnumInterface> void test(Class<T> enums, int a) {
 
 === Item 39: Prefer annotaions to naming patterns
 Naming patterns has serveral big disadvantages. First, typographical errors result in silent failures. Second, naming patterns is no way to ensure that they are used only on approprite program elements. And third, they provide no good way to associate parameter values with program elements.
+
+=== Item 40: Consistently use the Override annotaion
+If you consistently use this annotation, it will protect you from a large nefarious bugs. Use the `@Override` on every method declaration that you believe to override a superclass declaration.
+
+=== Item 41: Use marker interfaces to define types
+A _marker interface_ is an interface that contains no method declarations but merely designates (or "marks") a class that implements the interface as having some property (`Serializable`).
+
+Marker interfaces have two advantages over marker annotations. First and foremost, marker interfaces define a type that is implemented by instances of the marked class; marker annotations do not. Another advantage of marker interfaces over marker annotations is that they can be targeted more precisely.
+
+If the marker applies to any program element other that a class or interface, you must use an annotation. If the marker applies only to classes and interfaces, ask yourself the question "Might I want to write one or more methods that accept only objects that have this marking?" If so, you should use a marker interface in preference to an annotation.
+
