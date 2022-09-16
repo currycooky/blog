@@ -789,3 +789,4 @@ Marker interfaces have two advantages over marker annotations. First and foremos
 
 If the marker applies to any program element other that a class or interface, you must use an annotation. If the marker applies only to classes and interfaces, ask yourself the question "Might I want to write one or more methods that accept only objects that have this marking?" If so, you should use a marker interface in preference to an annotation.
 
+== Chapter 6: Lambdas and Streams
