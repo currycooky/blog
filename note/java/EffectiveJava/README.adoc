@@ -656,7 +656,7 @@ public class Favorites {
 ----
 The normal use of generics, exemplified by the collections APIS, restricts you to a fixed number of type parameters per container. You can get around this restriction by placing the type parameter on the key rather than the container.
 
-== Chapter 6: Enums and Annotations
+== Chapter 5: Enums and Annotations
 
 === Item 34: Use enums instead of int constants
 [source, java]
@@ -790,3 +790,30 @@ Marker interfaces have two advantages over marker annotations. First and foremos
 If the marker applies to any program element other that a class or interface, you must use an annotation. If the marker applies only to classes and interfaces, ask yourself the question "Might I want to write one or more methods that accept only objects that have this marking?" If so, you should use a marker interface in preference to an annotation.
 
 == Chapter 6: Lambdas and Streams
+How to make best use of lambdas and streams.
+
+=== Item 42: Prefer lambdas to anonymous classes
+[source, java]
+----
+// Anonymous class
+Collections.sort(words, new Comparator<String>() {
+    public int compare(String s1, String s2) {
+        return Integer.compare(s1.length(), s2.length());
+    }
+});
+
+// Lambda
+Collections.sort(words, (s1, s2) -> Integer.compare(s1.length(), s2.length()));
+----
+
+Lambdas lack names and documentation; if a computation isn't self-explanatory, or exceeds a few lines, don't put it in a lambda.
+
+One line is ideal for a lammbda, and three lines is a reasonable maximum.
+
+Lambdas share with anonymous classes the property that you can't reliably serialize and deserialize them across implementations. Therefore, you should rarely, if ever, serialize a lambda.
+
+If you have a function object that you want to make serializable, use an instance of a priavte static nested class.
+
+Don't use anonymous classes for function objects unless you have to create instances of types that aren't functional interafces.
+
+=== Item 43: Prefer method references to lambdas
