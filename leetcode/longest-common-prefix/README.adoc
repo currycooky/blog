@@ -1,0 +1,44 @@
+= Longest Common Prefix
+:toc: left
+
+== Overview
+____
+来源：力扣（LeetCode）
+
+链接：https://leetcode.cn/problems/longest-common-prefix
+
+著作权归领扣网络所有。商业转载请联系官方授权，非商业转载请注明出处。
+____
+Write a function to find the longest common prefix string amongst an array of strings.
+
+If there is no common prefix, return an empty string "".
+
+== Solution
+[source, java]
+----
+class Solution {
+    public String longestCommonPrefix(String[] strs) {
+        int n = Integer.MAX_VALUE;
+        for (String str : strs) {
+            n = Math.min(n, str.length());
+        }
+        StringBuilder stringBuilder = new StringBuilder();
+        int i = 0;
+        while (i < n) {
+            char c = ' ';
+            for (String str : strs) {
+                if (c == ' ') {
+                    c = str.charAt(i);
+                    continue;
+                }
+                if (c != str.charAt(i)) {
+                    return stringBuilder.toString();
+                }
+            }
+            stringBuilder.append(c);
+            i++;
+        }
+        return stringBuilder.toString();
+    }
+}
+----
