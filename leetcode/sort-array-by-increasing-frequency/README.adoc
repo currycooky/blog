@@ -1,0 +1,41 @@
+= Sort Array by Increasing Frequency
+:toc: left
+
+== Overview
+____
+来源：力扣（LeetCode）
+
+链接：https://leetcode.cn/problems/sort-array-by-increasing-frequency
+
+著作权归领扣网络所有。商业转载请联系官方授权，非商业转载请注明出处。
+____
+Given an array of integers nums, sort the array in increasing order based on the frequency of the values. If multiple values have the same frequency, sort them in decreasing order.
+
+Return the sorted array.
+
+== Solution
+[source, java]
+----
+class Solution {
+    public int[] frequencySort(int[] nums) {
+        Map<Integer, Integer> cache = new HashMap<>();
+        for (int num : nums) {
+            cache.put(num, cache.getOrDefault(num, 0) + 1);
+        }
+        List<Map.Entry<Integer, Integer>> list = cache.entrySet().stream().sorted((e1, e2) -> {
+            if (Objects.equals(e1.getValue(), e2.getValue())) {
+                return e2.getKey() - e1.getKey();
+            }
+            return e1.getValue() - e2.getValue();
+        }).collect(Collectors.toList());
+        int[] res = new int[nums.length];
+        int index = 0;
+        for (Map.Entry<Integer, Integer> entry : list) {
+            for (int i = 0; i < entry.getValue(); i++) {
+                res[index++] = entry.getKey();
+            }
+        }
+        return res;
+    }
+}
+----
