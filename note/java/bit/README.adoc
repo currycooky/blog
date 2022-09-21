@@ -84,3 +84,81 @@
 
 === 二进制转十进制
 对于二进制 `1100100` 转换为十进制，其过程为：`1 * 2^6^ + 1 * 2^5^ + 0 * 2^4^ + 0 * 2^3^ + 1 * 2^2^ + 0 * 2^1^ + 0 * 2^0^`。其中，数字 `2` 表示的则是需要转换的进制数，例如，8则表示要转换成八进制；而数字 `2` 上的指数，则是当前数字所在位置 `-1` 。
+
+== 位运算技巧
+____
+https://lfool.github.io/LFool-Notes/algorithm/%E4%BD%8D%E8%BF%90%E7%AE%97%E6%8A%80%E5%B7%A7.html
+____
+
+=== 大小写相互转换
+----
+// 转小写
+(char) ('a' | ' ') = 'a'
+(char) ('A' | ' ') = 'a'
+
+// 转大写
+(char) ('b' & '_') = 'B'
+(char) ('B' & '_') = 'B'
+
+// 大小写互转
+(char) ('d' ^ ' ') = 'D'
+(char) ('D' ^ ' ') = 'd'
+----
+
+=== 判断两个数是否异号
+`(x ^ y) < 0`，true为异号
+
+=== 不用临时变量交换两个数
+----
+int a = 1, b = 2;
+a ^= b;
+b ^= a;
+a ^= b;
+// 现在 a = 2, b = 1
+----
+
+=== 消除n的二进制中最后一位1
+**`n & (n - 1)`**
+----
+int n = 5;
+System.out.println(Integer.toBinaryString(n)); // 101
+n = n & (n - 1);
+System.out.println(Integer.toBinaryString(n)); // 100
+
+int n = 4;
+System.out.println(Integer.toBinaryString(n)); // 100
+n = n & (n - 1);
+System.out.println(Integer.toBinaryString(n)); // 0
+----
+
+=== 任意位置改为1或0
+----
+// 将第 i 位标记为 1
+used |= 1 << i;
+
+// 将第 i 位标记为 0
+used ^= 1 << i;
+----
+
+----
+int n = 10;
+System.out.println(Integer.toBinaryString(n)); // 1010
+n ^= 1 << 1;
+System.out.println(Integer.toBinaryString(n)); // 1000
+----
+
+----
+int n = 10;
+System.out.println(Integer.toBinaryString(n)); // 1010
+n |= 1 << 2;
+System.out.println(Integer.toBinaryString(n)); // 1110
+----
+
+=== 判断某一位置是否为0
+`((used >> i) & 1) == 1`
+
+----
+int n = 10;
+System.out.println(Integer.toBinaryString(n)); // 1010
+System.out.println(((n >> 2) & 1)); // 0
+----
