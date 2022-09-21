@@ -900,3 +900,47 @@ Performance gains from parallelism are best on streams over ArryayList, HashMap,
 Not only can parallelizing a stream lead t poor performance, including liveness failures; it can lead to incorrect results and unpredictable behavior.
 
 In summary, do not even attempt to parallelize a stream pipeline unless you have good reason to believe that it will preserve the correctness of the computation and increase its speed.
+
+== Chapter 7: Methods
+How to treat parameters and return values, how to design method signatures, and how to document methods. This chapter focuses on usability, robustness, and flexibility.
+
+=== Item 49: Check parameters for validity
+Each time you write a method or constructor, you should think about what restrictions exist on its parameters. You should document these restrictions and enforce them with explicit checks at the beginning of the method body.
+
+=== Item 50: Make defensive copies when needed
+[source, java]
+----
+Date start = new Date(), end = new Date();
+Period p = new Period(start, end);
+end.setYear(78); // modifies internals of p
+----
+
+If a class has mutable components that it gets from or returns to its clients, the class must defensively copy these components.
+
+If the cost of the copy whould be prohibitive and the class trusts its clients not to modify the components inappropriately, then the defensive copy may be replaced by documentation outlining the client's responsibility not to modify the affected components.
+
+=== Item 51: Design method signatures carefully
+Choose method names carefully. Names should always obey the standard naming conventions. Choose names that are understandable and consistent with other names in the same package. Avoid long method names.
+
+Do't go overboard in providing convenience methods. Too many methods make a class difficult to learn, use, document, test, and maintain.
+
+Avoid long parameter lists.
+
+For parameter types, facor interfaces over classes.
+
+Prefer two-element enum types to boolean parameters, unless the meaning of the boolean is clear from the method name.
+
+=== Item 52: Use overloading judiciously
+It is generally best to refrain from overloading methods with multiple signatures that have the same number of parameters.
+
+=== Item 53: Use varargs judiciously
+Varargs are invaluable when you need to define methods with a variable number of arguments. Precede the varargs parameter with any required parameters, and be aware of the performance consequences of using varargs.
+
+=== Item 54: Return empty collections or arrays, not nulls
+Never return null in place of an empty array or collection. It makes your API more difficult to use and more prone to error, and it has no performance advantages.
+
+=== Item 55: Return optionals judiciously
+You should be aware that there are real performance consequences associated with returning optionals; for performance-critical methods, it may be better to return a null or throw an exception.
+
+=== Item 56: Write doc comments for all exposed API elements
+Documentation comments are the best, most effective way to document your API. Their use should be considered mandatory for all exported API elements.
