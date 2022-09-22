@@ -1,0 +1,55 @@
+= Check Array Formation Through Concatenation
+:toc: left
+
+== Overview
+You are given an array of distinct integers arr and an array of integer arrays pieces, where the integers in pieces are distinct. Your goal is to form arr by concatenating the arrays in pieces in any order. However, you are not allowed to reorder the integers in each array pieces[i].
+
+Return true if it is possible to form the array arr from pieces. Otherwise, return false.
+
+ 
+____
+来源：力扣（LeetCode）
+
+链接：https://leetcode.cn/problems/check-array-formation-through-concatenation
+
+著作权归领扣网络所有。商业转载请联系官方授权，非商业转载请注明出处。
+____
+
+== Solution
+[source, java]
+----
+class Solution {
+    public boolean canFormArray(int[] arr, int[][] pieces) {
+        // 题目标识了元素值在1～100之间
+        int[][] pStart = new int[101][pieces[0].length];
+        
+        // 将pieces的元素保存在它第一位元素的位置
+        for (int i = 0; i < pieces.length; i++) {
+            int[] piece = pieces[i];
+            pStart[piece[0]] = piece;
+        }
+        
+        // 按照arr的顺序去判断
+        for (int i = 0; i < arr.length; i++) {
+            int[] piece = pStart[arr[i]];
+            // 如果为0说明当前数字没有值，因为最小也是1
+            if (piece[0] == 0) {
+                return false;
+            }
+            // 0位可以跳过，因为是直接按照0位找到的数据，说明0位肯定是相等的
+            int j = 1;
+            // java里数组的长度是固定的，如果元素不够会用0填充
+            // 所以当发现下一位是0时，说明已经没有值了，可以结束循环
+            while (j < piece.length && piece[j] != 0) {
+                // i在上面已经比对过了，现在要比对i+1
+                if (arr[++i] != piece[j++]) {
+                    return false;
+                }
+            }
+        }
+        
+        return true;
+    }
+}
+----
+https://leetcode.cn/problems/check-array-formation-through-concatenation/solution/java-shu-zu-by-da-pang-zi-f-dfm3/[链接]
