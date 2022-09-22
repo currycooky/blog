@@ -944,3 +944,39 @@ You should be aware that there are real performance consequences associated with
 
 === Item 56: Write doc comments for all exposed API elements
 Documentation comments are the best, most effective way to document your API. Their use should be considered mandatory for all exported API elements.
+
+== Chapter 8: General Programming
+
+=== Item 57: Minimize the scope of local variables
+The most powerful technique for minimizing the scope of a local variable is to declare it where it is first used.
+
+Nearly every local variable declaration should contain an initializer.
+
+[source, java]
+----
+Iterator<String> i1 = l1.iterator();
+while (i1.hasNext()) {
+    doSomething(i1.next());
+}
+
+Iterator<String> i2 = l2.iterator();
+while (i1.hasNext()) {
+    doSomething(i2.next()); // BUG!!!
+}
+----
+
+[source, java]
+----
+for (Iterator<String> i1 = l1.iterator(); i1.hasNext(); ) {
+    doSomething(i1.next());
+}
+
+for (Iterator<String> i2 = l2.iterator(); i2.hasNext(); ) {
+    // cannot find symbol i1
+    doSomething(i2.next());
+}
+----
+
+A final technique to minimize the scope of local variables is to keep methods small and focused.
+
+=== Item 58: Prefer for-each loops to traditional for loops
