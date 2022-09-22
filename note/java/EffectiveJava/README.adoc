@@ -994,3 +994,8 @@ Every programmer should be familiar with the basics of `java.lang`, `java.util`,
 If you can't find what you need in Java platform libraries, your next choice should be to look in high-quality third-party libraries, such as Google's excellent, open source Guava library. If you can't find the functionality that you need in any appropriate library, you may have no choice but to implement it yourself.
 
 NOTE: Don't reinvent the wheel.
+
+=== Item 60: Avoid float and double if exact answers are required
+The float and double types are particularly ill-suited for monetary calculations because it is impossible to represent 0.1 (or any other negative power of ten) as a float or double exactly.
+
+The right way is to use BigDecimal, int, or long for monetary calculations.
