@@ -980,3 +980,17 @@ for (Iterator<String> i2 = l2.iterator(); i2.hasNext(); ) {
 A final technique to minimize the scope of local variables is to keep methods small and focused.
 
 === Item 58: Prefer for-each loops to traditional for loops
+For-each loop provides compelling advantages over the traditional for loop in clarity, flexibility, and bug prevention, with no performance penalty.
+
+=== Item 59: Know and use the libraries
+By using a standard library, you take advantage of the knowledge of the experts who wrote it and the experience of those who use id before you.
+
+____
+We should n longer use `Random`. For most users, the random number generator of choice is now `ThreadLocalRandom`. For fork join pools and parallel streams, use `SplittableRandom`.
+____
+
+Every programmer should be familiar with the basics of `java.lang`, `java.util`, and `java.io`, and their subpackages. Knowledge of other libraries can be acquired on an as-needed basis.
+
+If you can't find what you need in Java platform libraries, your next choice should be to look in high-quality third-party libraries, such as Google's excellent, open source Guava library. If you can't find the functionality that you need in any appropriate library, you may have no choice but to implement it yourself.
+
+NOTE: Don't reinvent the wheel.
