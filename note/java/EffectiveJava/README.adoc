@@ -999,3 +999,70 @@ NOTE: Don't reinvent the wheel.
 The float and double types are particularly ill-suited for monetary calculations because it is impossible to represent 0.1 (or any other negative power of ten) as a float or double exactly.
 
 The right way is to use BigDecimal, int, or long for monetary calculations.
+
+===  Item 61: Prefer primitive types to boxed primitives
+Applying the == operator to boxed primitives is almost always wrong.
+
+When you mix primitives and boxed primitives in an operation, the boxed primitive is auto-unboxed. If a null object reference is auto-unboxed, you get a NullPointerException.
+
+The variable is repeatedly boxed and unboxed, causing the observed performance degradation.
+
+=== Item 62: Avoid strings where other types are more appropriate
+Strings are poor substitutes for other value types.
+
+Strings are poor substitutes for enum types.
+
+Strings are poor substitutes for aggreagate types.
+
+Strings are poor substitutes for capabilities.
+
+=== Item 63: Beware the performance of stirng concatenation
+Using the string concatenation operator repeatedly to concatenate n strings requires time quadratic in n. To achieve acceptable performance use a StringBuilder in place of a String to store the statement.
+
+=== Item 64: Refer to objects by theire interfaces
+If appropriate interface types exist, then parameters, return values, variables, and fields should all be declared using interface types.
+
+[source, java]
+----
+// Good
+List<String> fatherList = new ArrayList<>();
+
+// Bad
+ArrayList<String> montherList = new ArrayList<>();
+----
+
+If you get into the habit of using interfaces as types, your program will be much more flexible.
+
+If there is no appropriate interface, just use the least specific class in the class hierarchy that provides the required funcitonality.
+
+=== Item 65: Prefer interfaces to reflection
+This power comes at a price:
+
+* You lose all the benefits of compile-time type checking, including exception checking.
+
+* The code required to perform reflective access is clumsy and verbose.
+
+* Performance suffers.
+
+If you writing a program that has to work with classes unknown at compile time, you should, if at all possible, use reflection only to instantiate objects, and access the objects using some interface or superclass that is known at compile time.
+
+=== Item 66: Use native methods judiciously
+Donn't do this.
+
+=== Item 67: Optimize judiciously
+More computing sins are committed in the name of efficiency (without necessarily achieving it) than for any other single reason—including blind stupidity.
+
+We should forget about small efficiencies, say about 97% of the time: premature optimization is the root of all evil.
+
+We follow two rules in the matter of optimization:
+    Rule 1. Don’t do it.
+    Rule 2 (for experts only). Don’t do it yet—that is, not until you have a perfectly clear and unoptimized solution.
+
+Strive to write good programs rather than fase ones.
+
+Strive to avoid design decisions that limit performance.
+
+Consider the performance consequences of your API design decisions.
+
+=== Item 68: Adhere to generally accepted naming conventions
+Internalize the standard naming conventions and learn to use them as second nature. Use common sense.
