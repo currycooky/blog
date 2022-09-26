@@ -1131,3 +1131,55 @@ Where this rule is violated, the API documentation should clearly indicate what 
 An empty catch block defeats the purpose of exceptions.
 
 If you choose to ignore an exception, the catch block should cantain a comment explaining why it is appropriate to do so, and the variable should be named ignored.
+
+== Chapter 10: Concurrency
+
+=== Item 78: Synchronize access to shared mutable data
+Synchronization is not guaranteed to work unless both read and write operations are synchronized.
+
+When multiple threads share mutable data, each thread that reads or writes the data must perform synchronization.
+
+If you need only inter-thread communication, and not mutual exclusion, the volatile modifier is an acceptable form of synchronization, but it can be tricky to use correctly.
+
+=== Item 79: Avoid excessive synchronization
+As a rule, you should do as little work as possible inside synchronized regions.
+
+To avoid deadlock and data corruption, never call an alien method from within a synchronized region.
+
+=== Item 80: Prefer executors, tasks, and streams to threads
+
+=== Item 81: Prefer concurrency utilities to wait and notify
+Given the difficulty of using wait and notify correctly, you should use the higher-level concurrency utilities instead.
+
+For interval timing, always use System.nanoTime rather that System.currentTimeMillis. System.nanoTime is both more accurate and more precise and is unaffected by adjustments to the system's real-time clock.
+
+[source, java]
+----
+synchronizeed (obj) {
+    while (<condition does not hold>) {
+        obj.wait();
+    }
+}
+----
+Always use the wait loop idiom to invoke the wait method; never invoke it outside of a loop.
+
+=== Item 82: Document thread safety
+Level of thread safety:
+
+* *Immutable*: Instances of this class appear constant. No external synchronization is necessary. Examples include String, Long, and BigInteger.
+* *Unconditionally thread-safe*: Instances of this class are mutable, but the class has sufficient internal synchronization that its instances can be used concurrently without the need for any external synchronization. Examples include AtomicLong and ConcurrentHashMap.
+* *Conditionally thread-safe*: Like unconditionally thread-safe, except that some methods require external synchronization for safe concurrent use. Examples include the collections returned by the Collections.synchronized wrappers, whose iterators require external synchronization.
+* *Not thread-safe*
+* *Thread-hostile*
+
+Every class should clearly document its thread safety properties with a carefully worded prose description or a thread safety annotation.
+
+If you write an unconditionally threa-safe class, consider using a private lock object in place of synchronized methods. This protects you against synchronization interference by clients and subclasses and gives you more flexibility to adopt a sophisticated approach to concurrency control in a later release.
+
+=== Item 83: Use lazy initialization judiciously
+Don't do it unless you need to.
+
+=== Item 84: Don't depend on the thread scheduler
+Any program that relies on the thread scheduler for correctness or performance is likely to be nonportable.
+
+Do not rely on `Thread.yield` or thread priorities.
