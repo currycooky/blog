@@ -1066,3 +1066,68 @@ Consider the performance consequences of your API design decisions.
 
 === Item 68: Adhere to generally accepted naming conventions
 Internalize the standard naming conventions and learn to use them as second nature. Use common sense.
+
+== Chapter 9: Exceptions
+
+=== Item 69: Use exceptions only for exceptional conditions
+Exceptions are designed for exceptional conditions. Don't use them for ordinary control flow, and don't write APIs that force other to do so.
+
+=== Item 70: Use ckecked exceptions for recoverable conditions and runtime exceptions for programming errors
+Throw checked exceptions for recoverable conditions and unchecked exceptions for programming errors. When in doubt, throw unchecked exceptions. Don't define any throwables that are neither checked exceptions nor runtime exceptions. Provide methods on your checked exceptions to aid in recovery.
+
+=== Item 71: Avoid unnecessary use of checked exceptions
+When used sparingly, checked exceptions can increase the reliability of programs; when overused, they make APIs painful to use.
+
+If callers won't be able to recover from failures, throw unchecked exceptions. If recovery may be possible and you want to force callers to handle exceptional conditions, first consider returning an optional.
+
+Only if this would provide insufficient information in the case of failure should you throw a checked exception.
+
+=== Item 72: Favor the use of standard exceptions
+[cols="1,1"]
+|===
+|Exception|Occasion for Use
+
+|IllegalArgumentException
+|Non-null parameter value is inappropriate
+
+|IllegalStateException
+|Object state is inappropriate for method invocation
+
+|NullPointerException
+|Parameter value is null where prohibited
+
+|IndexOutOfBoundsException
+|Index parameter value is out of range
+
+|ConcurrentModificationException
+|Concurrent modification of an object has been detected where it is prohibited
+
+|UnsupportedOperationException
+|Object does not support method
+
+|===
+
+Do not reuse Exception, RuntimeException, Throwable, or Error directly.
+
+=== Item 73: Throw exceptions appropriate to the abstraction
+Higher layers should catch lower-level exceptions and, in their place, throw exceptions that can be explained in terms of the higher-level abstraction.
+
+If it isn't feasible to prevent or to handle exceptions from lower layers, use exception translation, unless the lower-level method happens to guarantee that all of its exceptions are appropriate to the higher level.
+
+=== Item 74: Document all exceptions thrown by each method
+`@throws`
+
+=== Item 75: Include failure-capture information in detail messages
+To capture a failure, the detail message of an exception should contain the values of all parameters and fields taht contributed to the exxception.
+
+Do not include passwords encryption keys, and the like in detail messages.
+
+=== Item 76: Strive for failure atomicity
+A failed method invocation should leave the object in the state that it was in prior to the invocation. A method with this property is said to be failure-atomic.
+
+Where this rule is violated, the API documentation should clearly indicate what state the object will be left in.
+
+=== Item 77: Don't ignore exceptions
+An empty catch block defeats the purpose of exceptions.
+
+If you choose to ignore an exception, the catch block should cantain a comment explaining why it is appropriate to do so, and the variable should be named ignored.
