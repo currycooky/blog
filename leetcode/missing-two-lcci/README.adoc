@@ -1,0 +1,50 @@
+= Missing Two LCCI
+:toc: left
+
+== Overview
+You are given an array with all the numbers from 1 to N appearing exactly once, except for two number that is missing. How can you find the missing number in O(N) time and 0(1) space?
+
+You can return the missing numbers in any order.
+
+
+____
+来源：力扣（LeetCode）
+
+链接：https://leetcode.cn/problems/missing-two-lcci
+
+著作权归领扣网络所有。商业转载请联系官方授权，非商业转载请注明出处。
+____
+
+== Solution
+
+.The parctice of shirking
+[source, java]
+----
+class Solution {
+    public int[] missingTwo(int[] nums) {
+        int[] cache = new int[30001];
+        int max = 0;
+        for (int i = 0; i < nums.length; i++) {
+            if (nums[i] > max) {
+                max = nums[i];
+            }
+            cache[nums[i]] = 1;
+        }
+        int[] res = new int[2];
+        int resIndex = 0;
+        for (int i = 1; i <= max; i++) {
+            if (cache[i] == 0) {
+                res[resIndex++] = i;
+            }
+        }
+        if (res[0] == 0) {
+            res[0] = max + 1;
+            res[1] = max + 2;
+        } else if (res[1] == 0) {
+            res[1] = max + 1;
+        }
+        
+        return res;
+    }
+}
+----
