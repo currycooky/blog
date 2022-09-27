@@ -1183,3 +1183,17 @@ Don't do it unless you need to.
 Any program that relies on the thread scheduler for correctness or performance is likely to be nonportable.
 
 Do not rely on `Thread.yield` or thread priorities.
+
+== Chapter 11: Serialization
+
+=== Item 85: Prefer alternatives to Java serialization
+There is no reason to use Java serialization in any new system you write.
+
+Serialization is dangerous and shoud be avoided. Use such as JSON or protobuf instead.
+
+=== Item 86: Implement Serializable with great caution
+A major cost of implementing Serializable is that it decreases the flexibility to change a class's implementation once it has been released.
+
+A second cost of implementing Serializable is that it increases the likelihood of bugs and security holes.
+
+A third cost of implementing Serializable is that it increases the testing burden associated with releasing a new version of a class.
