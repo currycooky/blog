@@ -1,0 +1,43 @@
+= Get Kth Magic Number LCCI
+:toc: left
+
+== Overview
+Design an algorithm to find the kth number such that the only prime factors are 3, 5, and 7. Note that 3, 5, and 7 do not have to be factors, but it should not have any other prime factors. For example, the first several multiples would be (in order) 1, 3, 5, 7, 9, 15, 21.
+
+Example 1:
+
+Input: k = 5
+
+Output: 9
+
+....
+来源：力扣（LeetCode）
+链接：https://leetcode.cn/problems/get-kth-magic-number-lcci
+著作权归领扣网络所有。商业转载请联系官方授权，非商业转载请注明出处。
+....
+
+== Solution
+[source, java]
+----
+class Solution {
+    public int getKthMagicNumber(int k) {
+        int[] dp = new int[k + 1];
+        dp[1] = 1;
+        int p3 = 1, p5 = 1, p7 = 1;
+        for (int i = 2; i <= k; i++) {
+            int num3 = dp[p3] * 3, num5 = dp[p5] * 5, num7 = dp[p7] * 7;
+            dp[i] = Math.min(num3, Math.min(num5, num7));
+            if (num3 == dp[i]) {
+                p3++;
+            }
+            if (num5 == dp[i]) {
+                p5++;
+            }
+            if (num7 == dp[i]) {
+                p7++;
+            }
+        }
+        return dp[k];
+    }
+}
+----
