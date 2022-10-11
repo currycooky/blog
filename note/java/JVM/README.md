@@ -80,3 +80,71 @@ JVM在执行代码时，并不会立即编译代码，因为如果代码只执�
 通过`System.gc()`可以主动触发垃圾回收（Full GC），但这不是一个好的操作，尽量要避免（性能监控或基准测试除外）。可以通过`-XX:+DisableExplicitGC`显示地禁止这种类型的GC。
 
 RMI作为分布式垃圾收集器的一部分，每隔一个小时它会调用`System.gc()`一次，可以通过设置`-Dsun.rmi.dgc.server.gcInterval=N`和`-Dsun.rmi.dgc.client.gcInterval=N`进行修改。N值的单位以毫秒记。
+
+## GC调优
+
+### 基础指令
+
+**-Xms**
+
+初始堆大小
+
+**-Xmx**
+
+最大堆大小
+
+**-XX:NewRatio=N**
+
+设置新生代与老年代的空间占用比例
+
+**-XX:NewSize=N**
+
+设置新生代的初始大小
+
+**-XX:MaxNewSize=N**
+
+设置新生代空间的最大大小
+
+**-XmnN**
+
+将NewSize和MaxNewSize设定为同一个值的快捷方法
+
+> `Initial Young Gen Size = Initial Heap Size / (1 + NewRatio)`
+> 
+> 默认情况下，新生代空间大小是初始堆的33%
+
+### 永久代和元空间
+
+**-XX:PermSize=N**
+
+永久代初始大小
+
+**-XX:MaxPermSize=N**
+
+永久代最大大小
+
+**-XX:MetaspaceSize=N**
+
+元空间初始大小
+
+**-XX:MaxMetaspaceSize=N**
+
+元空间最大大小
+
+> 永久代和元空间没有保存类实例的具体信息，也没有反射对象，这里保存的是一些类的元数据，只是一些“书签”信息。
+> 
+> 永久代并不意味着其中的数据就会永久保存，当Full GC时，老的元数据依旧会被丢弃回收。
+
+### 控制并发
+
+**-XX:ParallelGCThreads=N**
+
+控制多线程垃圾回收器启动的线程数
+
+> 以下参数会影响线程的数目：
+> 
+> * 使用`-XX:+UseParallelGC`、`-XX:+UseParNewGC`、`-XX:+UseG1GC`收集新生代空间
+> 
+> * 使用`-XX:+UseParallelOldGC`收集老年代空间
+> 
+> * CMS和G1收集器的“时空停顿”阶段（非Full GC）
