@@ -148,3 +148,13 @@ RMI作为分布式垃圾收集器的一部分，每隔一个小时它会调用`S
 > * 使用`-XX:+UseParallelOldGC`收集老年代空间
 > 
 > * CMS和G1收集器的“时空停顿”阶段（非Full GC）
+
+### 垃圾回收
+
+> 使用jstat工具查看gc信息。
+> 
+> 通过`jstat -options`列出所有选项
+> 
+> `jstat -gcutil process_id 1000`
+> 
+> 
