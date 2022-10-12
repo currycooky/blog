@@ -240,3 +240,54 @@ Java7中的CMS垃圾收集线程不会处理永久代中的垃圾，如果永久
 **在Java8中已经不推荐使用，在Java9中移除。**
 
 ### G1垃圾收集器
+
+>  **首先收集垃圾最多的分区**
+
+主要有4种情况会触发Full GC，这些日志是一个信号，我们需要进一步调优才能提升性能：
+
+1. 并发模式失效
+   
+   G1垃圾收集启动标记周期，但老年代在周期完成之前就被填满了，这种情况下，G1收集器会放弃标记周期。
+   
+   ```
+   51.408: [GC concurrent-mark-start]
+   65.473: [Full GC 4095M->1395M(4096M), 6.1963770 secs]
+    [Times: user=7.87 sys=0.00, real=6.20 secs]
+   71.669: [GC concurrent-mark-abort]
+   ```
+   
+   发生这种失败意味着堆的大小应该增加了，或者收集器的后台处理应该更早开始，或是需要调整周期，让它运行得更快。
+
+2. 晋升失败
+   
+   G1收集器完成了标记阶段，开始启动混合式垃圾回收，清理老年代的分区，不过，老年代空间在垃圾回收释放出足够内存之前就会被耗尽。日志中，这种情况的现象通常是混合式GC之后紧接着一次Full GC。
+   
+   ```
+   2226.224: [GC pause (mixed)
+           2226.440: [SoftReference, 0 refs, 0.0000060 secs]
+           2226.441: [WeakReference, 0 refs, 0.0000020 secs]
+           2226.441: [FinalReference, 0 refs, 0.0000010 secs]
+           2226.441: [PhantomReference, 0 refs, 0.0000010 secs]
+           2226.441: [JNI Weak Reference, 0.0000030 secs]
+                   (to-space exhausted), 0.2390040 secs]
+   ....
+       [Eden: 0.0B(400.0M)->0.0B(400.0M)
+           Survivors: 0.0B->0.0B Heap: 2006.4M(2048.0M)->2006.4M(2048.0M)]
+       [Times: user=1.70 sys=0.04, real=0.26 secs]
+   2226.510: [Full GC (Allocation Failure)
+           2227.519: [SoftReference, 4329 refs, 0.0005520 secs]
+           2227.520: [WeakReference, 12646 refs, 0.0010510 secs]
+           2227.521: [FinalReference, 7538 refs, 0.0005660 secs]
+           2227.521: [PhantomReference, 168 refs, 0.0000120 secs]
+           2227.521: [JNI Weak Reference, 0.0000020 secs]
+                   2006M->907M(2048M), 4.1615450 secs]
+       [Times: user=6.76 sys=0.01, real=4.16 secs]
+   ```
+   
+   
+
+#### G1垃圾收集器调优
+
+G1垃圾收集器调优的目标之一是尽量简单，所以最主要的调优只通过`-XX:MaxGCPauseMillis=N`。使用G1垃圾收集器时，该标志有一个默认值：200毫秒，如果G1收集器发生时空停顿的时长超过该值，G1收集器就会尝试各种方式进行弥补。
+
+如果减少了参数值，为了达到停顿时间的目标，新生代的大小会相应减小，不过新生代垃圾收集的频率会更加频繁。除此之外，混合式GC收集的老年代分区数也会减少，而这会增大并发模式失败发生的机会。
