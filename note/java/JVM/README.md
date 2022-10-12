@@ -156,5 +156,87 @@ RMI作为分布式垃圾收集器的一部分，每隔一个小时它会调用`S
 > 通过`jstat -options`列出所有选项
 > 
 > `jstat -gcutil process_id 1000`
+
+### Throughput收集器
+
+**-XX:MaxGCPauseMillis=N**
+
+设定应用可承受的最大停顿时间
+
+> 设定该标志的值，会影响Minor GC和Full GC，如果设置的值非常小，那么应用老年代最终就会非常小，会触发非常频繁的Full GC，对应用程序的性能将是灾难性的影响。缺省情况下，我们不设定该参数。
+
+**-XX:GCTimeRatio=N**
+
+设置程序在垃圾回收上花费多少时间
+
+> ***ThroughputGoal* = 1 - $\frac {1}{1 + GCTimeRatio}$**
 > 
+> GCTimeRatiod的默认值是99，上述公式得出的解是0.99，表示只有1%的时间消耗在垃圾回收上。
 > 
+> 通过以下公式计算期望应用程序线程工作的时间：
+> 
+> ***GCTimeRatio* = $\frac {Throughput}{1 - Throughput}$**
+> 
+> 比如期望95%，带入后求得的GCTimeRatio是19。
+
+### CMS收集器
+
+#### 回收新生代空间
+
+当堆的占用达到某个程度时，JVM会启动后台线程扫描堆，回收不用的对象，老年代空间不会进行压缩整理，会产生很多空间碎片。
+
+##### 并发回收
+
+1. 初始标记（CMS-initial-mark）：会暂停所有的应用程序线程。
+
+2. 标记阶段（CMS-concurrent-mark-start）：应用程序线程可以持续运行，不会中断，这个阶段仅仅是标记，不会对堆的使用情况产生实质性的改变。
+
+3. 预清理（CMS-concurrent-preclean-start）：与应用程序线程并发进行。
+
+4. 重新标记（CMS-concurrent-abortable-preclean-start）（可中断预清理）：标记阶段所有的应用线程都会被暂停，如果新生代收集刚刚结束，紧接着又是一个标记阶段的话，应用线程就会遭遇2次连续的停顿操作，使用可中断预清理阶段就是希望尽量缩短停顿的长度，避免连续停顿。
+
+5. 清除（CMS-concurrent-sweep-start）：回收线程与应用程序线程并发运行。
+
+6. 并发重置（CMS-concurrent-reset-start）：并发运行的最后一个阶段，CMS垃圾回收的周期至此告终，老年代空间没有被引用的对象被回收。
+
+以上是CMS回收的正常情况，但是现实世界并没有这么简单，我们还要额外查看另外的三种信息，出现这些信息表示垃圾收集器遇到了麻烦。
+
+1. 并发模式失效（concurrent mode failure）：新生代发生垃圾回收，但是老年代又没有足够的空间容纳晋升的对象时，CMS就会退化成Full GC，所有的应用线程都会被暂停。
+
+2. （promotion failed）老年代有足够的空间可以容纳晋升的对象，但是由于空闲空间的碎片化，导致晋升失败。
+
+3. 只有一条Full GC的记录，不含任何常规并发垃圾回收的标志：永久代空间用尽，需要回收，Java8中，如果元空间需要调整，也会发生同样的情况。
+
+#### 针对并发模式失效的调优
+
+1. 给后台线程更多的运行机会
+   
+   更早地启动并发收集周期，比如在老年代空间占用达到60%时启动并发周期，会比70%完成垃圾收集的几率更大。
+   
+   `-XX:CMSInitiatingOccupancyFraction=N`和`-XX:+UseCMSInitiatingOccupancyOnly=N`，同时使用这两个参数能帮助CMS更容易地进行决策：如果同时设置这两个标志，那么CMS就只依据设置的老年代空间占用率来决定何时启动后台线程。
+   
+   如果开启了`UseCMSInitiatingOccupancyOnly`，`CMSInitiatingOccupancyFraction`的默认值就被置为70，即CMS会在老年代空间占用达到70%时启动并发收集周期。
+
+2. 调整CMS后台线程
+   
+   每个CMS后台线程都会100%占用一颗CPU，如果并发模式失效，同时又有额外的CPU周期可用，可以设置`-XX:ConcGCThreads=N`，增加后台线程的数目。
+   
+   >  `ConcGCThreads = (3 + ParallelGCThreads) / 4`
+   
+   如果`ConcGCThreads`设置的偏大，垃圾收集会占用本来能用于运行应用程序的CPU周期，导致应用程序些微的停顿。
+   
+   而在一些配备了大量CPU的系统上，如果没有出现频繁的并发模式失败，可以考虑减少后台线程数，释放这部分CPU周期用于运行应用程序线程。
+
+#### 永久代调优
+
+Java7中的CMS垃圾收集线程不会处理永久代中的垃圾，如果永久代空间用尽，CMS会发起一次Full GC来回收其中的垃圾对象。
+
+还可以开启`-XX:+CMSPermGenSweepingEnabled`标志（默认为false），开启后，永久代中的垃圾使用与老年代同样的方式进行垃圾收集：通过一组后台线程并发地回收永久代中的垃圾对象。`-XX:CMSInitiatingPermOccupancyFraction=N `参数可以指定回收空间占比，默认值为80%。
+
+同时，我们还需要设置`-XX:+CMSClassUnloadingEnabled`，否则，永久代垃圾回收也只能释放少量的无效对象，类的元数据并不会被释放。
+
+#### 增量式CMS垃圾收集
+
+**在Java8中已经不推荐使用，在Java9中移除。**
+
+### G1垃圾收集器
