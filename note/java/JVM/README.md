@@ -325,3 +325,29 @@ G1垃圾收集器调优的目标之一是尽量简单，所以最主要的调优
    第二个因素是G1垃圾收集回收分区时最大混合式GC周期数，通过参数`-XX:G1MixedGCCountTarget=N`进行调节。默认值为8，减少该值可以解决晋升失败的问题，代价是混合式GC周期的停顿时间会更长。如果混合式GC的停顿时间过长，可以增大这个参数的值，减少每次混合式GC周期的工作量。不过调整之前我们需要确保增大值之后不会对下一次G1并发周期带来太大的延迟，否则可能会导致并发模式失败。
    
    第三个因素是GC停顿可忍受的最大时长，通过`MaxGCPauseMillis`参数设定，增大该参数值，能在每次混合式GC中收集更多的老年代分区，而这反过来又能帮助G1收集器在更早的时候启动并发周期。
+
+## 高级调优
+
+### 晋升及Survivor空间
+
+首次新生代垃圾收集时，对象被从Eden空间移动到Survivor0，紧接着的下一次垃圾收集中，活跃对象会从Survivor0和Eden空间移动到Survivor1，这之后，Eden空间和Survivor0空间被完全清空。下一次的垃圾回收会将活跃对象从Survivor1和Eden移回到Survivor0。
+
+如果新生代收集时，目标Survivor空间被填满，Eden空间剩下的活跃对象会直接进入老年代，或者对象在Survivor空间经历的GC周期数超过了上限，这些超过上限的对象也会被移动到老年代。这个上限值被称为晋升阈值，可以通过`-XX:InitialTenuringThreshold=N`标志来设置初始的晋升阈值，JVM最终会在1和最大晋升阈值（`-XX:MaxTenuringThreshold=N`）之间选择一个合适的值。
+
+Survivor空间的初始大小由`-XX:InitialSurvivorRatio=N`标志决定。
+
+```
+survivor_space_size = new_size / (initial_survivor_ratio + 2)
+```
+
+JVM可以增大Survivor空间的大小直到其最大上限（`-XX:MinSurvivorRatio=N`）。
+
+```
+maximum_survivor_space_size = new_size / (min_survivor_ratio + 2)
+```
+
+这个参数值是分母，值越小，Survivor空间的容量最大。
+
+为了保持Survivor空间的大小为某个固定值，我们可以使用`SurvivorRatio`参数，同时关闭`UseAdaptiveSizePolicy`（需要注意的是，关闭自适应调节大小会同时影响新生代和老年代）。
+
+JVM依据垃圾回收之后Survivor空间的占用情况判断是否需要增加或减少Survivor空间的大小。通过标志`-XX:TargetSurvivorRatio=N`设置，默认为50%。
