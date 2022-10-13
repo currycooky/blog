@@ -351,3 +351,79 @@ maximum_survivor_space_size = new_size / (min_survivor_ratio + 2)
 为了保持Survivor空间的大小为某个固定值，我们可以使用`SurvivorRatio`参数，同时关闭`UseAdaptiveSizePolicy`（需要注意的是，关闭自适应调节大小会同时影响新生代和老年代）。
 
 JVM依据垃圾回收之后Survivor空间的占用情况判断是否需要增加或减少Survivor空间的大小。通过标志`-XX:TargetSurvivorRatio=N`设置，默认为50%。
+
+避免因为Survivor空间过小而导致对象直接晋升到老年代，如果大量的短期对象最终填满老年代，会导致频繁的Full GC。
+
+如果增大Survivor空间的大小，内存由新生代的Eden空间划分到Survivor空间，会导致在Minor GC之前能分配的对象数目会更少。因此不推荐采用这种方式。
+
+另一种可能是增大新生代的大小，这会导致老年代空间变得更小，应用程序可能会频繁发生Full GC。
+
+推荐先增大堆的大小，同时减小存活率（这种调优适合其大多数对象在几个GC周期之后就不再存活）。
+
+## 堆内存最佳实践
+
+### 堆分析
+
+##### 打印堆直方图
+
+`jmap -histo process_id`
+
+> 包含被回收的对象
+
+`jcmd port GC.class_histogram`
+
+`jmap -histo:live process_id`
+
+> 触发一次Full GC，不包含被回收的对象
+
+##### 堆转储
+
+`jcmd process_id GC.heap_dump /path/to/heap_dump.hprof`
+
+`jmap -dump:live,file=/path/to/heap_dump.hprof process_id`
+
+然后通过几种工具查看转储出来的hprof文件：jhat/jvisualvm/mat
+
+### 内存溢出错误
+
+1. 原生内存不足
+   
+   如果Error消息中提到了原生内存的分配，那对堆进行调优解决不了问题，需要看一下错误中提到的是那种原生内存问题。
+
+2. 永久代或元空间内存不足
+   
+   应用使用的类太多：增加永久代的大小
+   
+   类加载器的内存泄漏：如果编写的应用会创建并丢弃大量类加载器，要确保类加载器本身能正确丢弃，尤其要确保没有线程将其上下文加载器设置成一个临时的类加载器。
+
+3. 堆内存不足
+   
+   增加堆的大小，同时检查程序是否存在内存泄漏：持续分配新对象，却没有让其他对象退出作用域。
+   
+   `-XX:+HeapDumpOnOutOfMemoryError`：打开自动堆转储
+   
+   `-XX:HeapDumpPath=<path>`：设置堆转储文件写入的位置
+   
+   `-XX:+HeapDumpAfterFullGC`：在运行一次Full GC后生成一个堆转储文件
+   
+   `-XX:+HeapDumpBeforeFullGC`：在运行一次Full GC之前生成一个堆转储文件
+
+4. 达到GC的开销限制
+   
+   JVM认为在执行GC上花费了太多时间。***必须同时满足下列所有条件时***，就会抛出该错误：
+   
+   1. 花费在Full GC上的时间超出了`-XX:GCTimeLimit=N`
+   
+   2. 一次Full GC回收的内存量少于`-XX:GCHeapFreeLimit=N`
+   
+   3. 上面两个条件连续5次Full GC都成立（如果连续4次Full GC周期都成立，JVM在第五次时会释放所有的软引用）
+   
+   4. `-XX:+UseGCOverhead-Limit`标记的值为true（默认为true）
+
+### 减少内存使用
+
+1. 减少对象大小
+
+2. 延迟初始化（需要线程安全的对象，应该使用双重检查锁）
+
+3. 尽早清理：在一个方法中创建局部变量；对于一个长期存活的类会缓存以及丢弃对象引用，一定要仔细检查，需要时应该手动将引用设置为null
