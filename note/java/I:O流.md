@@ -75,3 +75,40 @@ try (FileChannel channel = fis.getChannel()) {
 ```
 
 ## 异步I/O
+**基于Future接口的方式**
+```java
+try (AsynchronousFileChannel channel =
+         AsynchronousFileChannel.open(Paths.get("input.txt"))) {
+  ByteBuffer buffer = ByteBuffer.allocateDirect(1024 * 1024 * 100);
+  Future<Integer> result = channel.read(buffer, 0);
+
+  while(!result.isDone()) {
+    // 做些其他有用的操作……
+  }
+
+  System.out.println("Bytes read: " + result.get());
+}
+```
+
+**基于回调的方式**
+基于`CompletionHandler`接口实现。接口定义了`completed()`和`failed()`，分别在操作成功和失败时调用。
+```java
+CompletionHandler<Integer,Object> h =
+  new CompletionHandler() {
+  public void completed(Integer written, Object o) {
+    System.out.println("Bytes written: " + written);
+  }
+
+  public void failed(Throwable x, Object o) {
+    System.out.println("Asynch write failed: "+ x.getMessage());
+  }
+};
+
+try (AsynchronousFileChannel channel =
+       AsynchronousFileChannel.open(Paths.get("primes.txt"),
+          StandardOpenOption.CREATE, StandardOpenOption.WRITE)) {
+
+  channel.write(buffy, 0, null, h);
+  Thread.sleep(1000); // 必须这么做，防止退出太快
+}
+```
