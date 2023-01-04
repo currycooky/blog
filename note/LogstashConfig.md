@@ -35,3 +35,8 @@ output {
 > logstash-plugin install logstash-filter-multiline
 > ```
 
+
+**自带的正则匹配**
+> https://github.com/logstash-plugins/logstash-patterns-core
+>
+> 在patterns目录下已经包含了120种正则表达式
